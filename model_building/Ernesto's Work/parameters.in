@@ -1,0 +1,15 @@
+file_1 = mean_std_group_1.dat
+file_2 = mean_std_group_2.dat
+file_3 = mean_std_group_3.dat
+file_4 = mean_std_group_4.dat
+file_5 = mean_std_group_5.dat
+file_6 = mean_std_group_6.dat
+par_r = 6.773495e-02
+par_k = 1.331254e+03
+par_a = 0.0
+par_dt = 3.165840e-02
+par_tt = 1.696031e-02
+par_dd = 6.548050e-05
+par_td = 3.001805e-01
+par_del_td = 4.327301e-01
+par_tau_dt = 9.344758e+03
