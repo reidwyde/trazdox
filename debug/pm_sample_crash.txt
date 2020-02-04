@@ -1,0 +1,43 @@
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source
+libifcoremd.dll    00007FFEA5E43B58  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFEE9803EE3  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFEEADC7974  Unknown               Unknown  Unknown
+ntdll.dll          00007FFEED4FA271  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source
+libifcoremd.dll    00007FFEA5E43B58  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFEE9803EE3  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFEEADC7974  Unknown               Unknown  Unknown
+ntdll.dll          00007FFEED4FA271  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source
+libifcoremd.dll    00007FFEA5E43B58  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFEE9803EE3  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFEEADC7974  Unknown               Unknown  Unknown
+ntdll.dll          00007FFEED4FA271  Unknown               Unknown  Unknown
+forrtl: error (200): program aborting due to control-C event
+Image              PC                Routine            Line        Source
+libifcoremd.dll    00007FFEA5E43B58  Unknown               Unknown  Unknown
+KERNELBASE.dll     00007FFEE9803EE3  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFEEADC7974  Unknown               Unknown  Unknown
+ntdll.dll          00007FFEED4FA271  Unknown               Unknown  Unknown
+[E 12:17:36.617 NotebookApp] Uncaught exception in ZMQStream callback
+    Traceback (most recent call last):
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\zmq\eventloop\zmqstream.py", line 438, in _run_callback
+        callback(*args, **kwargs)
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\zmq\eventloop\zmqstream.py", line 203, in <lambda>
+        self.on_recv(lambda msg: callback(self, msg), copy=copy)
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\notebook\services\kernels\handlers.py", line 317, in _on_zmq_reply
+        msg = self.session.deserialize(fed_msg_list)
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\jupyter_client\session.py", line 926, in deserialize
+        header = self.unpack(msg_list[1])
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\jupyter_client\session.py", line 105, in <lambda>
+        json_unpacker = lambda s: jsonapi.loads(s)
+      File "C:\Users\Reid\Anaconda3\lib\site-packages\zmq\utils\jsonapi.py", line 56, in loads
+        return jsonmod.loads(s, **kwargs)
+      File "C:\Users\Reid\Anaconda3\lib\json\__init__.py", line 347, in loads
+        parse_constant is None and object_pairs_hook is None and not kw):
+    KeyboardInterrupt
+[I 12:17:37.663 NotebookApp] Interrupted...
+[I 12:17:37.667 NotebookApp] Shutting down 2 kernels
