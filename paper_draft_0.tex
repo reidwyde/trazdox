@@ -73,65 +73,7 @@ $ \eta_{h} $ Time of Herceptin treatment
 
 
 
-
-
-\subsection{Single Equation Family of Models}
-
-
-System 0A,B,C
-
-Single equation family
-
-model evolutions, exponential, logistic, allee
-time delay
-asymmetrical drug interaction; constriction on the window of action vs increasing clearing rate vs blocking entrance to the system
-
-Choice to ignore carrying capacity
-
-1) If tumor reaches biophysical carrying capacity from size, subject is likely already dead
-
-2) Not enough behavior in data
- 
-Increasingly large number of considerations motivated characterizing the system by a family of coupled differential equations, as was done in [sorace et al]
-
-
-\subsection{System 1}
-
-There is a synergistic effect of Doxorubicin and Herceptin, and an antagonistic effect. This is determined by order. These equations capture the apparent "blocking" action of Doxorubicin on Herceptin.
-
-
-
-$$ \frac{d \phi_t}{dt} = (r \phi_t - \lambda_h \phi_h \phi_t  - (\lambda_d + \lambda_hd \phi_h ) \phi_d \phi_t $$
-
-$$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) D_d $$
-
-$$ \frac{d \phi_h}{dt} = - \tau_h \phi_h + \delta (t - \eta_h) D_h exp(-\lambda_{dh} \phi_d) $$
-
-%$$ H(t) = H(t) + \delta_H e^{-\lambda_{DH}}{D(t)} $$
-
-%$$ D(t) = D(t) + \delta_D $$
-
-$ \delta(t-\eta_{\alpha}) $ signifying the Kronecker delta on treatment day $ \eta_{\alpha} $ for drug $ \alpha $ ( $ \alpha = d $ for Doxorubicin, $ \alpha = h $ for Herceptin).
-
-
-
-
-\subsection{System 2}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Possibly the following:
 
 
 $ \lambda_{OD} $ The effect of Doxorubicin on the number of ROS
@@ -140,53 +82,32 @@ $ \lambda_{ODH} $ The synergistic effect of Herceptin's NRF2 suppression and Dox
 
 $ \lambda_{DH} $ Herceptin's suppression of NRF2 on Doxorubicin clearing rate 
 
-$$
-\;
-\;
-$$
-
 
 $ \tau_O $ The natural clearing rate of ROS
 
-$ \tau_H $ The natural clearing rate of Herceptin
-
-$ \tau_D $ The natural clearing rate of Doxorubcin
-
-$$
-\;
-\;
-$$
-
-
-$ \delta_H $ The Kronecker delta representing Herceptin drug delivery on the specified treatment days
-
-$ \delta_D $ The Kronecker delta representing Doxorubicin drug delivery on the specified treatment days
 
 
 
+\subsection{System 1}
+
+There is a synergistic effect of Doxorubicin and Herceptin, and an antagonistic effect. This is determined by order. These equations capture the apparent "blocking" action of Doxorubicin on Herceptin.
 
 
 
+$$ \frac{d \phi_t}{dt} = r \phi_t - \lambda_h \phi_h \phi_t  - (\lambda_d + \lambda_{hd} \phi_h ) \phi_d \phi_t $$
+
+$$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) D_d $$
+
+$$ \frac{d \phi_h}{dt} = - \tau_h \phi_h + \delta (t - \eta_h) D_h e^{-\lambda_{dh} \phi_d} $$
+
+
+$ \delta(t-\eta_{\alpha}) $ signifying the Kronecker delta on treatment day $ \eta_{\alpha} $ for drug $ \alpha $ ( $ \alpha = d $ for Doxorubicin, $ \alpha = h $ for Herceptin).
 
 
 
 
+\subsection{System 2}
 
-
-System 1B
-
-$$ \frac{dT}{dt} = ( r - \delta_D D - \delta_{DH} D H - \delta_H H ) T  $$
-
-
-$$ \frac{dH}{dt} = S_H - \tau_H H - \tau_{DH} D H $$
-
-
-$$ \frac{dD}{dt} = S_D - \tau_D D
-\;\;\;\;
-or
-\;\;\;\;
-\frac{dD}{dt} = S_D - \tau_D D + \tau_{HD} H 
-$$
 
 
 
@@ -202,162 +123,38 @@ We also consider that doxorubicin has a destructive effect on the receptors that
 
 
 
-$$ \frac{dT}{dt} = (r - \delta_{HO} H O - \delta_H H ) T $$
+$$ \frac{d \phi_t}{dt} = r \phi_t - \lambda_h \phi_h \phi_t - \lambda_{ho} \phi_h \phi_o \phi_t $$
 
+$$ \frac{d \phi_o}{dt} = \lambda_{od} \phi_d - \tau_o \phi_o $$
 
-$$ \frac{dO}{dt} = \delta_{DO} D - \tau_O O $$
+$$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) D_d $$
 
+$$ \frac{d \phi_h}{dt} = - \tau_h \phi_h + \delta (t - \eta_h) D_h e^{-\lambda_{dh} \phi_d} $$
 
-$$ \frac{dH}{dt} = S_H - \tau_H H - \tau_{DH} D H $$
 
 
-$$ 
-\frac{dD}{dt} = S_D - \tau_D D
-\;\;\;\;
-or 
-\;\;\;\;
-\frac{dD}{dt} = S_D - \tau_D D + \tau_{HD} H 
-$$
+\subsection{System 3}
 
+$$ \frac{d \phi_t}{dt} = r \phi_t - \lambda_h \phi_h \phi_t - \lambda_o \phi_o \phi_t $$
 
+$$ \frac{d \phi_o}{dt} = \lambda_{odh} \phi_d \phi_h - \tau_o \phi_o $$
 
+$$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) D_d $$
 
+$$ \frac{d \phi_h}{dt} = - \tau_h \phi_h + \delta (t - \eta_h) D_h e^{-\lambda_{dh} \phi_d} $$
 
-system 3A
 
 
-$$ \frac{dT}{dt} = (r - \delta_o O - \delta_H H ) T $$
+\subsection{System 4}
 
+$$ \frac{d \phi_t}{dt} = r \phi_t - \lambda_o \phi_o \phi_t $$
 
-$$ \frac{dO}{dt} = \delta_{DO} D - \tau_O O + \delta_{dho} O D H $$
 
+$$ \frac{d \phi_o}{dt} = \lambda_{oh} \phi_h + \lambda_{odh} \phi_d \phi_h - \tau_o \phi_o $$
 
-$$ \frac{dH}{dt} = S_H - \tau_H H - \tau_{DH} D H $$
+$$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) D_d $$
 
-
-$$ \frac{dD}{dt} = S_D - \tau_D D
-\;\;\;\;
-or 
-\;\;\;\;
-\frac{dD}{dt} = S_D - \tau_D D + \tau_{HD} H 
-$$
-
-
-
-
-
-
-system 3B
-Doxorubicin burns the trk family receptors, and thus prevents herceptin from entering or affecting the cell
-
-
-
-$$ \frac{dT}{dt} = (r - \lambda_O O - \lambda_H H ) T $$
-
-
-$$ \frac{dO}{dt} = \lambda_{ODH} D H - \tau_O O $$
-
-
-$$ \frac{dH}{dt} = \delta_He^{-\lambda_{HD}D} - \tau_H H $$
-
-
-$$ \frac{dD}{dt} = \delta_D - \tau_D D$$
-
-With:
-
-
-$ r $ The natural growth rate
-
-$ \lambda_O $ The effect of ROS on the tumor 
-
-$ \lambda_H $ The effect of Herceptin on the tumor (likely through immune signalling) 
-
-$ \lambda_{OD} $ The effect of Doxorubicin on the number of ROS
-
-$ \lambda_{ODH} $ The synergistic effect of Herceptin's NRF2 suppression and Doxorubicin's production of ROS
-
-$ \lambda_{DH} $ Herceptin's suppression of NRF2 on Doxorubicin clearing rate 
-
-$$
-\;
-\;
-$$
-
-
-$ \tau_O $ The natural clearing rate of ROS
-
-$ \tau_H $ The natural clearing rate of Herceptin
-
-$ \tau_D $ The natural clearing rate of Doxorubcin
-
-$$
-\;
-\;
-$$
-
-
-$ \delta_H $ The Kronecker delta representing Herceptin drug delivery on the specified treatment days
-
-$ \delta_D $ The Kronecker delta representing Doxorubicin drug delivery on the specified treatment days
-
-
-
-
-
-system 4
-
-Doxorubicin burns the trk family receptors, and thus prevents herceptin from entering or affecting the cell
-$$ \frac{dT}{dt} = (r - \lambda_O O) T $$
-
-
-$$ \frac{dO}{dt} = \lambda_{OH} H + \lambda_{ODH} D H - \tau_O O $$
-
-
-$$ \frac{dH}{dt} = \delta_He^{-\lambda_{HD}D} - \tau_H H $$
-
-
-$$ \frac{dD}{dt} = \delta_D - \tau_D D $$
-
-
-
-
-With:
-
-
-$ r $ The natural growth rate
-
-$ \lambda_O $ The effect of ROS on the tumor 
-
-$ \lambda_H $ The effect of Herceptin on the tumor (likely through immune signalling) 
-
-$ \lambda_{OD} $ The effect of Doxorubicin on the number of ROS
-
-$ \lambda_{ODH} $ The synergistic effect of Herceptin's NRF2 suppression and Doxorubicin's production of ROS
-
-$ \lambda_{DH} $ Herceptin's suppression of NRF2 on Doxorubicin clearing rate 
-
-$$
-\;
-\;
-$$
-
-
-$ \tau_O $ The natural clearing rate of ROS
-
-$ \tau_H $ The natural clearing rate of Herceptin
-
-$ \tau_D $ The natural clearing rate of Doxorubcin
-
-$$
-\;
-\;
-$$
-
-
-$ \delta_H $ The Kronecker delta representing Herceptin drug delivery on the specified treatment days
-
-$ \delta_D $ The Kronecker delta representing Doxorubicin drug delivery on the specified treatment days
-
+$$ \frac{d \phi_h}{dt} = - \tau_h \phi_h + \delta (t - \eta_h) D_h e^{-\lambda_{dh} \phi_d} $$
 
 
 
