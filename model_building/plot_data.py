@@ -29,8 +29,7 @@ def plot_sims_vs_actual(groups, ts, Ts, sigmas, sim_times, T_sim):
     plt.figure(figsize=[16,10])
     for ii in range(len(groups)):
         group = groups[ii]
-        #plt.subplot(2,3,group+1)
-        plt.figure()
+        plt.subplot(2,3,ii+1)
         plt.scatter(ts, Ts[group,:])
         plt.errorbar(ts, Ts[group,:], sigmas[group,:],fmt='.', capsize=2)
         plt.plot(sim_times, T_sim[ii,:])
@@ -86,8 +85,6 @@ def graph_Shs(groups, times, Shs):
         plt.xlabel('Day')
         plt.ylabel('Size')
         plt.show()
-        
-        
 
 # plotting state variables   
 def plot_D(sim_times, sim_D, groups=[0,1,2,3,4,5]):
