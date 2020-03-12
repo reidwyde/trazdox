@@ -1,3 +1,6 @@
+#todo: fix get param
+
+import arviz as az
 from get_tumor_db import get_tumor_db
 from parse_tumor_db import parse_tumor_db
 import numpy as np
@@ -23,15 +26,22 @@ class growth_model(object):
     def dOdt(self, *argv):
         return 0
     
-    def rk_T(self, *argv):
-        return 0
-    def rk_D(self, *argv):
-        return 0
-    def rk_H(self, *argv):
-        return 0
-    def rk_O(self, *argv):
-        return 0
-
+    def rk_T(self, h, state_vec, fit_params):
+        T = state_vec[3]
+        return rk_utils.rk_X(h, T, state_vec, fit_params, self.dTdt)
+    
+    def rk_D(self, h, state_vec, fit_params):
+        D = state_vec[0]
+        return rk_utils.rk_X(h, D, state_vec, fit_params, self.dDdt)
+    
+    def rk_H(self, h, state_vec, fit_params):
+        H = state_vec[1]
+        return rk_utils.rk_X(h, H, state_vec, fit_params, self.dHdt)
+    
+    def rk_O(self, h, state_vec, fit_params):
+        O = state_vec[2]
+        return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
+    
     def get_param(self, param_name, n=10):
         return pm.summary(self.trace)['mean'][param_name]
     
@@ -120,12 +130,20 @@ class growth_model(object):
             
             # Within each chain, operations are sequential and cannot be parallelized.
             # if the number of samples drops too low, then the model will throw a negative minors in cholesky factorization
-            num_tune = int(self.num_samples/5)
+            num_tune = int(self.num_samples/2)
             
             #step = pm.SMC()
             step = pm.Metropolis()
+            prior = pm.sample_prior_predictive()
             self.trace = pm.sample(self.num_samples, step=step, tune=num_tune, chains = self.num_chains, cores=1, start=startsmc)
             pm.traceplot(self.trace)
+            
+            posterior_predictive = pm.sample_posterior_predictive(self.trace)
+            
+            data = az.from_pymc3(trace=self.trace, prior = prior, posterior_predictive = posterior_predictive)
+            
+            az.plot_posterior(data,round_to=4, credible_interval=0.95);
+            
             
             #doesn't work
             #print('log marginal likelihood: ' + str(np.log(model.marginal_likelihood)))
@@ -206,17 +224,16 @@ class growth_model_1(growth_model):
         self.param_estimates = {
             'r':[0.0001,0.1],
             'lambda_h': [0.0001, 0.1],
-            'lambda_d': [0.0001, 0.1],
-            'lambda_hd': [0.0001, 0.1],
-            'tau_d': [0.0001, 0.5],
+            'lambda_hd': [0.0001, 0.2],
+            'tau_d': [0, 0.5],
             'tau_h': [0.0001, 0.3],
-            'lambda_dh': [0.0001,10]
+            'lambda_dh': [0.0001,40]
         }
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 80
-        self.num_chains = 5
+        self.num_samples = 2000
+        self.num_chains = 40
             
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
         
@@ -224,28 +241,27 @@ class growth_model_1(growth_model):
     #don't take the respective state variable from state_vec here, since runge kutta relies on 
     #the respective state variable being iterated forward
     def dDdt(self, D, state_vec, fit_params):
-        #r, lambda_h, lambda_d, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
-        tau_D = fit_params[4]
+        #r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_D = fit_params[3]
         return -tau_D*D
     
     def dHdt(self, H, state_vec, fit_params):
-        #r, lambda_h, lambda_d, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
-        tau_H = fit_params[5]
+        #r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_H = fit_params[4]
         return -tau_H*H
     
     def dOdt(self, O, state_vec, fit_params):
-        #r, lambda_h, lambda_d, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
+        #r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
         return 0
     
     def dTdt(self, T, state_vec, fit_params):
-        #r, lambda_h, lambda_d, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
+        #r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh = [x for x in params]
         r = fit_params[0]
         lambda_h = fit_params[1]
-        lambda_d = fit_params[2]
-        lambda_hd = fit_params[3]
+        lambda_hd = fit_params[2]
         D = state_vec[0]
         H = state_vec[1]
-        return (r - lambda_h*H - lambda_d*D - lambda_hd * H * D)*T
+        return (r - lambda_h*H - lambda_hd * H * D)*T
     
     def rk_T(self, h, state_vec, fit_params):
         T = state_vec[3]
@@ -263,11 +279,7 @@ class growth_model_1(growth_model):
         O = state_vec[2]
         return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
     
-    
-    
-    
-    
-    
+     
 class growth_model_2(growth_model):
     def __init__(self):
         
@@ -285,19 +297,19 @@ class growth_model_2(growth_model):
         #lower and upper estimates
         self.param_estimates = {
             'r':[0.0001,0.1],
-            'lambda_h': [0.0001, 0.1],
-            'lambda_ho': [0.0001, 0.5],
-            'lambda_od': [0.0001, 0.5],
-            'tau_o': [0.0001, 0.5],
-            'tau_d': [0.0001, 0.5],
-            'tau_h': [0.0001, 0.3],
-            'lambda_dh': [0.0001,10]
+            'lambda_h': [0, 0.1],
+            'lambda_ho': [0, 1],
+            'lambda_od': [0, 1],
+            'tau_o': [0, 0.5],
+            'tau_d': [0, 0.5],
+            'tau_h': [0, 0.3],
+            'lambda_dh': [0,40]
         }
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 80
-        self.num_chains = 10
+        self.num_samples = 1000
+        self.num_chains = 40
             
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
         
@@ -377,8 +389,8 @@ class growth_model_2b(growth_model):
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 80
-        self.num_chains = 10
+        self.num_samples = 1000
+        self.num_chains = 40
             
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
         
@@ -413,21 +425,133 @@ class growth_model_2b(growth_model):
         O = state_vec[2]
         return (r - lambda_h*H - lambda_o * O)*T
     
-    def rk_T(self, h, state_vec, fit_params):
-        T = state_vec[3]
-        return rk_utils.rk_X(h, T, state_vec, fit_params, self.dTdt)
+
     
-    def rk_D(self, h, state_vec, fit_params):
+class growth_model_3(growth_model):
+    def __init__(self):
+        
+        tumor_size_db = get_tumor_db()
+        ts, Ts, sigmas = parse_tumor_db(tumor_size_db)
+
+        super().__init__(ts, np.array(Ts[:,0]).reshape(-1,))
+        self.sim_times = np.linspace(7,70,100*(70-7+1)) # original time indexing started at day 7
+        
+        self.groups, self._times = [0,1,2,3,4,5], ts
+        self.Sds_fit, self.Shs_fit = tm.get_Sd_impulse(ts), tm.get_Sh_impulse(ts)
+        self.Sds_sim, self.Shs_sim = tm.get_Sd_impulse(self.sim_times), tm.get_Sh_impulse(self.sim_times)
+        self.Sds, self.Shs = self.Sds_fit, self.Shs_fit 
+
+        #lower and upper estimates
+        self.param_estimates = {
+            'r':[0.0001,0.1],
+            'lambda_h': [0.0001, 0.1],
+            'lambda_o': [0, 1],
+            'lambda_odh': [0, 1],
+            'tau_o': [0, 0.5],
+            'tau_d': [0, 0.5],
+            'tau_h': [0, 0.3],
+            'lambda_dh': [0,40]
+        }
+        
+        self.param_list = list(self.param_estimates.keys())
+        
+        self.num_samples = 1000
+        self.num_chains = 40
+        
+        plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
+        
+        
+    #don't take the respective state variable from state_vec here, since runge kutta relies on 
+    #the respective state variable being iterated forward
+    def dDdt(self, D, state_vec, fit_params):
+        #r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_d = fit_params[5]
+        return -tau_d*D
+    
+    def dHdt(self, H, state_vec, fit_params):
+        #r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_h = fit_params[6]
+        return -tau_h*H
+    
+    def dOdt(self, O, state_vec, fit_params):
+        #r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
         D = state_vec[0]
-        return rk_utils.rk_X(h, D, state_vec, fit_params, self.dDdt)
-    
-    def rk_H(self, h, state_vec, fit_params):
         H = state_vec[1]
-        return rk_utils.rk_X(h, H, state_vec, fit_params, self.dHdt)
+        lambda_odh = fit_params[3]
+        tau_o = fit_params[4]
+        return lambda_odh*D*H - tau_o*O
     
-    def rk_O(self, h, state_vec, fit_params):
+    def dTdt(self, T, state_vec, fit_params):
+        #r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        r = fit_params[0]
+        lambda_h = fit_params[1]
+        lambda_o = fit_params[2]
+        H = state_vec[1]
         O = state_vec[2]
-        return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
+        return (r - lambda_h*H - lambda_o * O)*T
     
 
+class growth_model_4(growth_model):
+    def __init__(self):
+        
+        tumor_size_db = get_tumor_db()
+        ts, Ts, sigmas = parse_tumor_db(tumor_size_db)
+
+        super().__init__(ts, np.array(Ts[:,0]).reshape(-1,))
+        self.sim_times = np.linspace(7,70,100*(70-7+1)) # original time indexing started at day 7
+        
+        self.groups, self._times = [0,1,2,3,4,5], ts
+        self.Sds_fit, self.Shs_fit = tm.get_Sd_impulse(ts), tm.get_Sh_impulse(ts)
+        self.Sds_sim, self.Shs_sim = tm.get_Sd_impulse(self.sim_times), tm.get_Sh_impulse(self.sim_times)
+        self.Sds, self.Shs = self.Sds_fit, self.Shs_fit 
+
+        #lower and upper estimates
+        self.param_estimates = {
+            'r':[0.0001,0.1],
+            'lambda_o': [0, 0.2],
+            'lambda_oh': [0, 0.5],
+            'lambda_odh': [0, 1],
+            'tau_o': [0, 0.5],
+            'tau_d': [0, 0.1],
+            'tau_h': [0, 1],
+            'lambda_dh': [0, 40]
+        }
+        
+        self.param_list = list(self.param_estimates.keys())
+        
+        self.num_samples = 1000
+        self.num_chains = 20
+        
+        plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
+        
+        
+    #don't take the respective state variable from state_vec here, since runge kutta relies on 
+    #the respective state variable being iterated forward
+    def dDdt(self, D, state_vec, fit_params):
+        #r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_d = fit_params[5]
+        return -tau_d*D
+    
+    def dHdt(self, H, state_vec, fit_params):
+        #r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        tau_h = fit_params[6]
+        return -tau_h*H
+    
+    def dOdt(self, O, state_vec, fit_params):
+        #r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        D = state_vec[0]
+        H = state_vec[1]
+        lambda_oh = fit_params[2]
+        lambda_odh = fit_params[3]
+        tau_o = fit_params[4]
+        return lambda_oh*H + lambda_odh*D*H - tau_o*O
+    
+    def dTdt(self, T, state_vec, fit_params):
+        #r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh = [x for x in params]
+        r = fit_params[0]
+        lambda_o = fit_params[1]
+        O = state_vec[2]
+        return (r - lambda_o * O)*T
+    
+    
     
