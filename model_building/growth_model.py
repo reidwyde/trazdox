@@ -308,7 +308,7 @@ class growth_model_2(growth_model):
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 1000
+        self.num_samples = 2000
         self.num_chains = 40
             
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
@@ -389,7 +389,7 @@ class growth_model_2b(growth_model):
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 1000
+        self.num_samples = 2000
         self.num_chains = 40
             
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
@@ -455,7 +455,7 @@ class growth_model_3(growth_model):
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 1000
+        self.num_samples = 2000
         self.num_chains = 40
         
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
@@ -519,8 +519,8 @@ class growth_model_4(growth_model):
         
         self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 1000
-        self.num_chains = 20
+        self.num_samples = 2000
+        self.num_chains = 40
         
         plot_data.plot_combined_treatment(ts, self.groups, self.Sds, self.Shs)
         
