@@ -11,6 +11,9 @@ import pymc3 as pm
 import theano
 import theano.tensor as tt
 from theano.compile.ops import as_op
+import matplotlib.pyplot as plt
+
+ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
 
 class growth_model(object):
     def __init__(self, times, T0):
@@ -171,7 +174,7 @@ class growth_model(object):
 
         for ii in range(len(sim_params)):
             print(self.param_list[ii] + ' = ' + str(sim_params[ii]))
-
+        
         return
     
     #todo: make it so fit_sim calls sim
@@ -189,7 +192,49 @@ class growth_model(object):
             print(self.param_list[ii] + ' = ' + str(self.get_param(ii)))
 
         return 
+    
+    def sim_model(self, sim_params):
+        self.Sds = self.Sds_sim
+        self.Shs = self.Shs_sim
+        sim_T = self.simulate(sim_params, self.sim_times)
+        return sim_T
+
+    def get_sim_T_ts(self, sim_params):
+        ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
+        sim_T = self.sim_model(sim_params)
+        result = np.zeros(Ts.shape)
+
+        j = 0
+        for i in range(len(self.sim_times)):
+            if j < 19 and abs(self.sim_times[i] - ts[j]) < 0.01:
+                result[:,j] = sim_T[:,i]
+                j += 1
+
+        return result
+
+    def AIC(self):    
+        def get_log_likelihood(Ts, sim_T_ts, sigmas):
+            result = np.zeros((Ts.shape[0],1))
+            N = Ts.shape[1]
+
+            for i in range(result.shape[0]):
+                group_Ts = Ts[i,:].ravel()
+                group_sim_T_ts = sim_T_ts[i,:].ravel()
+                sigma = sigmas[i,0]
+                first_term = -N / 2 * np.log(2 * np.pi * sigma**2)
+                second_term = -1 / (2*sigma**2) * sum((group_Ts-group_sim_T_ts)**2)
+                result[i,0] = first_term + second_term
+            return result
+
+        def get_AIC(number_of_params, log_likelihood):
+            # 2*number of parameters —2* maximized log likelihood
+            return 2*number_of_params - 2*log_likelihood
         
+        ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
+        sim_params = self.get_best_sim_params()
+        sim_T_ts = self.get_sim_T_ts(sim_params)
+        return get_AIC(len(self.param_estimates), get_log_likelihood(Ts, sim_T_ts, sigmas))
+
         
 """
 growth model class must be modified to reflect a new differential equation
@@ -204,7 +249,6 @@ th_forward_model
 """    
 
 
-ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
 
 class growth_model_1(growth_model):
     def __init__(self):
@@ -279,6 +323,15 @@ class growth_model_1(growth_model):
         O = state_vec[2]
         return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
     
+    def get_best_sim_params(self):
+        r = 0.061
+        lambda_h = 0.041
+        lambda_hd = 0.136
+        tau_d = 0.041
+        tau_h = 0.036
+        lambda_dh = 25.143
+        return [r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh]
+
      
 class growth_model_2(growth_model):
     def __init__(self):
@@ -358,6 +411,16 @@ class growth_model_2(growth_model):
         O = state_vec[2]
         return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
     
+    def get_best_sim_params(self):
+        r = 0.061
+        lambda_h = 0.052
+        lambda_ho = 0.407
+        lambda_od = 0.442
+        tau_o = 0.152
+        tau_d = 0.432
+        tau_h = 0.064
+        lambda_dh = 34.167
+        return [r, lambda_h, lambda_ho, lambda_od, tau_o, tau_d, tau_h, lambda_dh]
     
     
 class growth_model_2b(growth_model):
@@ -490,6 +553,17 @@ class growth_model_3(growth_model):
         O = state_vec[2]
         return (r - lambda_h*H - lambda_o * O)*T
     
+    def get_best_sim_params(self):
+        r = 0.061
+        lambda_h = 0.052
+        lambda_o = 0.448
+        lambda_odh = 0.362
+        tau_o = 0.181
+        tau_d = 0.384
+        tau_h = 0.064
+        lambda_dh = 31.793
+        return [r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh]
+        
 
 class growth_model_4(growth_model):
     def __init__(self):
@@ -553,5 +627,16 @@ class growth_model_4(growth_model):
         O = state_vec[2]
         return (r - lambda_o * O)*T
     
+    def get_best_sim_params(self):
+        r = 0.061
+        lambda_o = 0.135
+        lambda_oh = 0.187
+        lambda_odh = 0.741
+        tau_o = 0.143
+        tau_d = 0.07
+        tau_h = 0.612
+        lambda_dh = 25.548
+        return [r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh]
+
     
     
