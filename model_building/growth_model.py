@@ -244,7 +244,7 @@ class growth_model(object):
         ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
         sim_params = self.get_best_sim_params()
         sim_T_ts = self.get_sim_T_ts(sim_params)
-        return get_BIC(len(self.param_estimates), len(ts), get_log_likelihood(Ts, sim_T_ts, sigmas))
+        return get_BIC(len(self.param_estimates), len(Ts.ravel()), get_log_likelihood(Ts, sim_T_ts, sigmas))
     
 
         
