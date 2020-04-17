@@ -36,6 +36,7 @@ def plot_sims_vs_actual(groups, ts, Ts, sigmas, sim_times, T_sim):
         plt.title('Group ' + str(group))
         plt.xlabel('Day')
         plt.ylabel('Size')
+        plt.legend(['Simulation','Data'])
     plt.show()
     
 def plot_short(times, var, title):
@@ -60,7 +61,7 @@ def plot_combined_treatment(ts, groups, Sds, Shs):
         plt.stem(ts, Sds[ii,:], 'b', markerfmt='bo', label='delta_D', use_line_collection=True)
         plt.stem(ts, Shs[ii,:], 'g', markerfmt='go', label='delta_H', use_line_collection=True)
         plt.title('Group ' + str(group) + ' Treatment')
-        plt.legend()
+        plt.legend(['Doxorubicin','Herceptin'])
     plt.show()
     
     

@@ -3,6 +3,7 @@
 import arviz as az
 from get_tumor_db import get_tumor_db
 from parse_tumor_db import parse_tumor_db
+from Log_likelihood import get_log_likelihood
 import numpy as np
 import treatment_model as tm
 import plot_data
@@ -212,20 +213,20 @@ class growth_model(object):
 
         return result
 
-    def AIC(self):    
-        def get_log_likelihood(Ts, sim_T_ts, sigmas):
-            result = np.zeros((Ts.shape[0],1))
-            N = Ts.shape[1]
+    def get_log_likelihood(Ts, sim_T_ts, sigmas):
+        result = np.zeros((Ts.shape[0],1))
+        N = Ts.shape[1]
 
-            for i in range(result.shape[0]):
-                group_Ts = Ts[i,:].ravel()
-                group_sim_T_ts = sim_T_ts[i,:].ravel()
-                sigma = sigmas[i,0]
-                first_term = -N / 2 * np.log(2 * np.pi * sigma**2)
-                second_term = -1 / (2*sigma**2) * sum((group_Ts-group_sim_T_ts)**2)
-                result[i,0] = first_term + second_term
-            return result
-
+        for i in range(result.shape[0]):
+            group_Ts = Ts[i,:].ravel()
+            group_sim_T_ts = sim_T_ts[i,:].ravel()
+            sigma = sigmas[i,0]
+            first_term = -N / 2 * np.log(2 * np.pi * sigma**2)
+            second_term = -1 / (2*sigma**2) * sum((group_Ts-group_sim_T_ts)**2)
+            result[i,0] = first_term + second_term
+        return sum(result.ravel())
+        
+    def AIC(self):
         def get_AIC(number_of_params, log_likelihood):
             # 2*number of parameters —2* maximized log likelihood
             return 2*number_of_params - 2*log_likelihood
@@ -234,6 +235,17 @@ class growth_model(object):
         sim_params = self.get_best_sim_params()
         sim_T_ts = self.get_sim_T_ts(sim_params)
         return get_AIC(len(self.param_estimates), get_log_likelihood(Ts, sim_T_ts, sigmas))
+    
+    def BIC(self):
+        def get_BIC(number_of_params, number_of_datapoints, log_likelihood):
+            # 2*number of parameters —2* maximized log likelihood
+            return np.log(number_of_datapoints)*number_of_params - 2*log_likelihood
+        
+        ts, Ts, sigmas = parse_tumor_db(get_tumor_db())
+        sim_params = self.get_best_sim_params()
+        sim_T_ts = self.get_sim_T_ts(sim_params)
+        return get_BIC(len(self.param_estimates), len(ts), get_log_likelihood(Ts, sim_T_ts, sigmas))
+    
 
         
 """
@@ -324,12 +336,12 @@ class growth_model_1(growth_model):
         return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
     
     def get_best_sim_params(self):
-        r = 0.061
-        lambda_h = 0.041
-        lambda_hd = 0.136
-        tau_d = 0.041
-        tau_h = 0.036
-        lambda_dh = 25.143
+        r = 6.191238e-2 #0.061
+        lambda_h = 2.885953e-2 #0.041
+        lambda_hd = 7.029930e-2  #0.136
+        tau_d = 1.720374e-3 #0.041
+        tau_h = 4.171260e-3 #0.036
+        lambda_dh = 9.776661e0 #25.143
         return [r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh]
 
      
@@ -412,14 +424,14 @@ class growth_model_2(growth_model):
         return rk_utils.rk_X(h, O, state_vec, fit_params, self.dOdt)
     
     def get_best_sim_params(self):
-        r = 0.061
-        lambda_h = 0.052
-        lambda_ho = 0.407
-        lambda_od = 0.442
-        tau_o = 0.152
-        tau_d = 0.432
-        tau_h = 0.064
-        lambda_dh = 34.167
+        r = 6.198720e-2 #0.061
+        lambda_h = 2.894577e-2 #0.052
+        lambda_ho = 2.657592e-1 #0.407
+        lambda_od = 1.337581e1 #0.442
+        tau_o = 4.903494e1 #0.152
+        tau_d = 4.864478e-3 #0.432
+        tau_h = 5.076163e-3 #0.064
+        lambda_dh = 9.995652e0 #34.167
         return [r, lambda_h, lambda_ho, lambda_od, tau_o, tau_d, tau_h, lambda_dh]
     
     
@@ -554,16 +566,15 @@ class growth_model_3(growth_model):
         return (r - lambda_h*H - lambda_o * O)*T
     
     def get_best_sim_params(self):
-        r = 0.061
-        lambda_h = 0.052
-        lambda_o = 0.448
-        lambda_odh = 0.362
-        tau_o = 0.181
-        tau_d = 0.384
-        tau_h = 0.064
-        lambda_dh = 31.793
+        r = 6.198824e-2 #0.061
+        lambda_h = 3.104945e-2 #0.052
+        lambda_o = 6.356908e0 #0.448
+        lambda_odh = 4.236145e-2 #0.362
+        tau_o = 3.434915e0 #0.181
+        tau_d = 3.911236e-3 #0.384
+        tau_h = 1.052131e-2 #0.064
+        lambda_dh = 9.557923e0 #31.793
         return [r, lambda_h, lambda_o, lambda_odh, tau_o, tau_d, tau_h, lambda_dh]
-        
 
 class growth_model_4(growth_model):
     def __init__(self):
@@ -628,14 +639,14 @@ class growth_model_4(growth_model):
         return (r - lambda_o * O)*T
     
     def get_best_sim_params(self):
-        r = 0.061
-        lambda_o = 0.135
-        lambda_oh = 0.187
-        lambda_odh = 0.741
-        tau_o = 0.143
-        tau_d = 0.07
-        tau_h = 0.612
-        lambda_dh = 25.548
+        r = 6.197490e-2 #0.061
+        lambda_o = 1.428324e1 #0.135
+        lambda_oh = 6.171914e-2 #0.187
+        lambda_odh = 1.547911e-1 #0.741
+        tau_o = 3.087974e1 #0.143
+        tau_d = 1.173226e-4 #0.07
+        tau_h = 4.565477e-3 #0.612
+        lambda_dh = 9.658535e0 #25.548
         return [r, lambda_o, lambda_oh, lambda_odh, tau_o, tau_d, tau_h, lambda_dh]
 
     
