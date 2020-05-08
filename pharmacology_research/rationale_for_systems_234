@@ -9,10 +9,21 @@ Keap1
 HER1,2,3,4
 NRF2
 
+Condensed notation
+H - Herceptin
+D - Doxorubicin
+X1 - X first order effect on tumor growth
+X2 - X second order effect on tumor growth
+XAYB - X A order effect on tumor growth, multiplicative with Y B order effect on tumor growth
+
+
+
 
 
 
 System 2
+Condensed notation: 
+H1, H1D2
 
 dφt
 dt = rφt − λhφhφt − λhoφhφoφt
@@ -102,6 +113,8 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3116111/pdf/nihms286388.pdf
 
 
 System 3
+Condensed notation
+H1, H2D2
 
 dφt
 dt = rφt − λhφhφt − λoφoφt
@@ -135,6 +148,8 @@ We formulate effective synergism of Herceptin and doxorubicin gains prominence w
 
 
 System 4
+Condensed notation
+H2, H2D2
 
 dφt
 dt = rφt − λoφoφt
@@ -177,7 +192,7 @@ combined with PI3K-Akt downregulation, downregulation of NRF2, and downregulatio
 
 
 
-
+Original writing
 
 We consider the pharmacodynamics and cell signalling pathway that doxorubicin and herceptin affect. Doxorubicin has been known to increase radically
 oxidizing species (ROS, or ’free radicals’), e.g. quinones or ketones, and herceptin is known to supress NRF2, which is a signalling molecule that curtails
