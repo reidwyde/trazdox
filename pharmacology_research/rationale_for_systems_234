@@ -1,0 +1,194 @@
+Terms
+ROS - Reactive oxygen species
+EFGR 
+ErbB
+TRK / RTK
+MapK
+HO-1 
+Keap1
+HER1,2,3,4
+NRF2
+
+
+
+
+System 2
+
+dφt
+dt = rφt − λhφhφt − λhoφhφoφt
+
+dφo
+dt = λodφd − τoφo
+
+Lay terms:
+tumor growth is suppressed by two factors. The first is associated directly with concentration of herceptin. 
+The second factor is associated with the multiplicative combination of herceptin concentration and oxidative species concentration
+
+Oxidative species growth is directly dependent only on concentration of doxorubicin
+
+
+Rationale:
+λhφhφt term
+Herceptin arrests EFGR
+Herceptin arrests ErbB
+Herceptin regularizes vascular perfusion of immunocytes
+Herceptin downregulates PI3K-Akt pathways, preventing other cell survival mechanisms
+
+
+Jaques et al 2020
+https://www.hh.um.es/Reviews-proofs/18-221-manuscript.pdf
+
+"""Mechanism of action
+Trastuzumab, or brand name called Herceptin, is a humanized monoclonal antibody (Immunoglobulin
+G1, IgG1). The IgG1 binds to the domain IV extracellular region of HER2 and causes G1 cell arrest by
+upregulating Cdk inhibitor p27 and blocking the Akt and MAPK pathways (Le et al., 2005); subsequent
+loss of HER2 receptors thereby suppresses cells survival and growth mechanisms. The interaction of
+HER2 with Trastuzumab prevents tyrosine kinase signalling through a number of methods (Figure 2A). 
+5
+It can block HER2 forming dimers with other HER receptors and block cleavage of the extracellular
+domain. It can also induce passive endocytosis, which then subjects the targeted receptor to lysosomal
+degradation (Austin et al., 2004). Alternatively, the Fc region of Trastuzumab binds to the Fc gamma
+receptor III of effector immune cells, such as Natural Killer cells, which kill tumour cells via antibodydependent cell mediated cytotoxicity (ADCC) (Collins et al., 2012). Due to the high specificity of the
+target, cytotoxic side effects are reduced compared to traditional chemotherapy agents, therefore
+maintaining a higher quality of life (Osoba et al., 2002). Trastuzumab also prevents the formation of
+HER2 heterodimers, thus downregulating intracellular PI3K-Akt pathways, and further suppressing
+cellular survival mechanisms via the Proto-oncogene tyrosine-protein kinase Src/Focal adhesion kinase
+(Src/Fak) pathway (Xu et al., 2009).
+Interestingly, Trastuzumab has shown to have anti-angiogenic properties, decreasing vascular
+endothelial growth factor (VEGF) expression and possibly increasing blood vessel permeability (Petit et
+al., 1997; Sorace et al., 2016). This is proposed to boost drug delivery to the tumour but it is
+simultaneously linked to vascular side-effects. 
+"""
+Sorace et al 2016
+
+Bange et al 2001
+https://www-nature-com.ezproxy.lib.utexas.edu/articles/nm0501_548.pdf
+
+
+
+
+λhoφhφoφt term
+Herceptin downregulates PI3K-Akt pathways, leading to reduced expression of NRF2 in cytoplasm and nucleus.
+This reduces the production of antioxidant compounds, (.e.g., ) that allow ROS to overwhelm the cell and trigger apoptosis.
+
+Khalil et al 2016
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5342785/pdf/oncotarget-07-75874.pdf
+
+Li et al 2014
+https://www.sciencedirect.com/science/article/abs/pii/S0009279713003268
+
+Ewer 2010
+https://ascopubs.org/doi/pdf/10.1200/JCO.2010.30.6274
+
+Zhang 2012
+https://pdfs.semanticscholar.org/f515/9cadefde22fc963417a58ab212867afa4dfb.pdf
+
+
+
+
+λodφd term
+Anthracyclines are known to produce ROS in a cyclic process, leading to oxidative stress. 
+This is the main hypothesis for the cytotic efficacy of adjuvant anthracycline-HER/neu therapy, as well as the increased risk of cardiotoxicity, 
+stemming from cardioid myocyte exposure to ROS and subsequent degradation. 
+
+Cappetta et al 2017
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5664340/
+
+Thorn et al 2011
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3116111/pdf/nihms286388.pdf
+
+
+
+
+
+System 3
+
+dφt
+dt = rφt − λhφhφt − λoφoφt
+
+dφo
+dt = λodhφdφh − τoφo
+
+Lay terms:
+Tumor growth is suppressed by two factors. The first is associated directly with concentration of herceptin. 
+The second is associated with only the concentration of oxidative species. 
+
+Oxidative species growth is dependent on the multiplicative combination of herceptin and doxorubicin. 
+
+Rationale
+λhφhφt
+Same as system 2
+
+λoφoφt
+We hypothesize that the proposed synergism of herceptin and doxorubicin through the PI3K-Akt pathway downregulation is more significant that the
+vascular perfusion effect.
+OR
+We hypothesize that the proposed synergism of herceptin an doxorubicin is a second order effect in their multiplicative concentration, regardless of the underlying mechanism. 
+Then the state variable ROS is representative of the different potential synergisms of herceptin and doxorubicin.
+
+λodhφdφh
+We formulate effective concentration of ROS is a second order effect of the concentration of herceptin and doxorubcin. 
+OR
+We formulate effective synergism of Herceptin and doxorubicin gains prominence within the cell at a rate proportional to their multiplicative concentration. 
+
+
+
+
+System 4
+
+dφt
+dt = rφt − λoφoφt
+
+dφo
+dt = λohφh + λodhφdφh − τoφo
+
+Lay terms:
+Tumor growth is suppressed by a single factor. This is associated directly with the concentration of oxidative species. 
+
+Oxidative species growth is dependent on two factors. The first is associated independently with Herceptin.
+The second is associated with the multiplicative combination of herceptin and doxorubicin. 
+
+Rationale:
+λoφoφt
+Again, here we formulate ROS as a latent variable to represent the total effective influence of doxorubicin and herceptin on the cell
+
+λohφh
+The reasoning is the same for the independent herceptin effects in system 2, but are here thought to act as a second order phenomenon on tumor growth
+
+λodhφdφh
+The reasoning is the same for the combined term in system 3. 
+The buildup of ROS in the cell is caused by a combination of:
+creation of ROS from anthracycline
+combined with PI3K-Akt downregulation, downregulation of NRF2, and downregulation of HO-1 and other antioxidants and ROS scavengers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We consider the pharmacodynamics and cell signalling pathway that doxorubicin and herceptin affect. Doxorubicin has been known to increase radically
+oxidizing species (ROS, or ’free radicals’), e.g. quinones or ketones, and herceptin is known to supress NRF2, which is a signalling molecule that curtails
+the effects and amount of free radicals in the cell.
+We will consider effective free radical concentration as a latent variable, with
+tumor size being directly effected by the free radical concentration, and the free
+radical concentration being effected by both doxorubicin and herceptin. We will
+also consider that herceptin has immune signalling properties independent of the
+free radical production mechanism, and can thus affect tumor size independently
+
+of doxorubicin. We choose O for the radically oxidizing species variable to avoid
+confusion with tumor growth rate r.
+We also consider that doxorubicin has a destructive effect on the receptors
+that herceptin binds to. This prevents herceptin from signaling on the system.
