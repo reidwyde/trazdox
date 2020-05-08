@@ -17,6 +17,8 @@ X2 - X second order effect on tumor growth
 XAYB - X A order effect on tumor growth, multiplicative with Y B order effect on tumor growth
 
 
+Assumption
+Natural growth rate is logistic
 
 
 
