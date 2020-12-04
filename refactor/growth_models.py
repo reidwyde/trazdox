@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,15 +27,11 @@ warnings.filterwarnings("ignore")
 # mybinder (online git repos for notebooks)
 # generate requirements.txt
 
-# In[2]:
 
 
 path_to_data = "filtered_data_csv.csv"
 data = pd.read_csv(path_to_data)
 data.head()
-
-
-# In[3]:
 
 
 data_array = data.to_numpy()
@@ -55,8 +45,6 @@ print(T0.shape)
 
 
 
-# In[4]:
-
 
 plt.figure(figsize=(16,10))
 for ii in range(6):
@@ -65,10 +53,9 @@ for ii in range(6):
     plt.scatter(days, tumor_sizes[ii,:])
     plt.errorbar(days, tumor_sizes[ii,:], tumor_sigmas[ii,:])
     plt.title("group {}".format(ii))
-plt.show()
-
-
-# In[5]:
+#plt.show()
+plt.savefig("tumor_sizes.jpg")
+plt.close("all")
 
 
 
@@ -109,38 +96,50 @@ class growth_model(object):
             #step = pm.SMC()
             step = pm.Metropolis()
             #prior = pm.sample_prior_predictive()
-            self.trace = pm.sample(self.num_samples, step=step, tune=num_tune, chains = self.num_chains, cores=1)
+            self.trace = pm.sample(self.num_samples, step=step, tune=num_tune, chains = self.num_chains, cores=self.num_cores)
             #trace = pm.sample_smc(kernel="ABC")
             
             pm.traceplot(self.trace)
+            plt.savefig("traceplot.jpg")
+            plt.close("all")
             
-            posterior_predictive = pm.sample_posterior_predictive(self.trace)
+            #posterior_predictive = pm.sample_posterior_predictive(self.trace)
             
             #data = az.from_pymc3(trace=self.trace, prior = prior, posterior_predictive = posterior_predictive)
-            data = az.from_pymc3(trace=self.trace, posterior_predictive = posterior_predictive)
+            #data = az.from_pymc3(trace=self.trace, posterior_predictive = posterior_predictive)
+            #az.plot_posterior(data, round_to=4, credible_interval=0.95);
+            #plt.savefig("posterior.jpg")
+            #plt.close("all")
             
-            az.plot_posterior(data, round_to=4, credible_interval=0.95);
 
-
+            """
             t2 = time.time()
             print("sampling posteriors")
             posterior_predictive = pm.sample_posterior_predictive(self.trace)
             print("plotting posterior samples")
             #az.plot_trace(posterior_predictive)
-            traceplot(posterior_predictive, show=True)
+            traceplot(posterior_predictive)
+            plt.savefig("posterior_samples.jpg")
+            plt.close("all")
             t3 = time.time()
             print(t3-t2, "seconds")
+            """
 
 
+            """
             print("generating posterior distributions")
             #posterior_distribution = az.from_pymc3(trace=self.trace, prior=prior, posterior_predictive=posterior_predictive)
             posterior_distribution = az.from_pymc3(trace=self.trace, posterior_predictive=posterior_predictive)
             print("plotting posterior distribution")
-            az.plot_posterior(posterior_distribution, show=True)
+            az.plot_posterior(posterior_distribution)#, show=True)
             #traceplot(posterior_distribution)
+            plt.savefig("posterior_dist.jpg")
+            plt.close("all")
+            plt.close("all")
             t4 = time.time()
             print(t4-t3, "seconds")
-            
+            """
+ 
             
             sim_times = days
             sim_params = []
@@ -150,7 +149,9 @@ class growth_model(object):
                 
             
             #visualize drug concentrations
-            gm1.set_sim_DH(sim_params)
+            sim_y = gm1.rhs(sim_times, sim_params)
+
+            #gm1.set_sim_DH(sim_params)
             plt.figure(figsize=(16,10))
             for ii in range(6):
                 plt.subplot(2,3,ii+1)
@@ -159,11 +160,13 @@ class growth_model(object):
                 plt.plot(gm1.sim_H['t'], gm1.sim_H['y'][ii,:])
                 plt.legend(["doxorubicin","herceptin"])
                 plt.title("group {}".format(ii))
-            plt.show()
-            
+            #plt.show()
+            plt.savefig("drug_concentrations.jpg")
+            plt.close("all")
+ 
             
             #visualize tumor growth
-            sim_y = gm1.rhs(sim_times, sim_params)
+            #sim_y = gm1.rhs(sim_times, sim_params)
             plt.figure(figsize=(16,10))
             for ii in range(6):
                 plt.subplot(2,3,ii+1)
@@ -174,8 +177,9 @@ class growth_model(object):
                 plt.plot(sim_times, sim_y[ii,:])
                 plt.title("group {}".format(ii))
     
-            plt.show()
-
+            #plt.show()
+            plt.savefig("rhs.jpg")
+            plt.close("all")
 
             
 
@@ -191,7 +195,6 @@ class growth_model(object):
 # 
 # r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh
 
-# In[6]:
 
 
 
@@ -217,7 +220,7 @@ class growth_model_1(growth_model):
         self.param_estimates['lambda_hd'] = [0,1]
         self.param_estimates['tau_d'] = [0,1]
         self.param_estimates['tau_h'] = [0, 1]
-        self.param_estimates['lambda_dh'] = [0,1]
+        self.param_estimates['lambda_dh'] = [0,20]
         
         
         self.dose_time_D = np.array([[-1,-1],
@@ -237,8 +240,9 @@ class growth_model_1(growth_model):
         
         #self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 36
-        self.num_chains = 10
+        self.num_samples = 300
+        self.num_chains = 48
+        self.num_cores = 5
         self.t_span = (7,70)
         
     
@@ -323,7 +327,9 @@ for ii in range(6):
     plt.plot(gm1.sim_H['t'], gm1.sim_H['y'][ii,:])
     plt.legend(["doxorubicin","herceptin"])
     plt.title("group {}".format(ii))
-plt.show()
+#plt.show()
+plt.savefig("drug_concentrations_fixed.jpg")
+plt.close("all")
 
 
 
@@ -339,26 +345,12 @@ for ii in range(6):
     plt.errorbar(days, tumor_sizes[ii,:], tumor_sigmas[ii,:])
     plt.plot(sim_times, sim_y[ii,:])
     plt.title("group {}".format(ii))
-    
-plt.show()
+#plt.show()
+plt.savefig("rhs_fixed.jpg")
+plt.close("all")
 
 
-# In[ ]:
-
-
-
-
-
-# ## Fit backwards model
-
-# In[ ]:
 
 
 growth_model_1().backward()
-
-
-# In[ ]:
-
-
-
 
