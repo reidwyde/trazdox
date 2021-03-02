@@ -149,9 +149,9 @@ class growth_model(object):
                 
             
             #visualize drug concentrations
-            sim_y = gm1.rhs(sim_times, sim_params)
+            sim_y = self.rhs(sim_times, sim_params)
 
-            #gm1.set_sim_DH(sim_params)
+            #self.set_sim_DH(sim_params)
             plt.figure(figsize=(16,10))
             for ii in range(6):
                 plt.subplot(2,3,ii+1)
@@ -166,7 +166,7 @@ class growth_model(object):
  
             
             #visualize tumor growth
-            #sim_y = gm1.rhs(sim_times, sim_params)
+            #sim_y = self.rhs(sim_times, sim_params)
             plt.figure(figsize=(16,10))
             for ii in range(6):
                 plt.subplot(2,3,ii+1)
@@ -187,7 +187,7 @@ class growth_model(object):
 # ## Growth Model 1
 # 
 # 
-# $$ \frac{d \phi_t}{dt} = r \phi_t - \lambda_h \phi_h \phi_t  - \lambda_{hd} \phi_h \phi_d \phi_t $$
+# $$ \frac{d \phi_t}{dt} = (r - \lambda_h \phi_h   - \lambda_{hd} \phi_h \phi_d ) \phi_t (1 - \frac{ \phi_t }{K}) $$
 # 
 # $$ \frac{d \phi_d}{dt} = - \tau_d \phi_d + \delta (t - \eta_d) $$
 # 
@@ -221,6 +221,7 @@ class growth_model_1(growth_model):
         self.param_estimates['tau_d'] = [0,1]
         self.param_estimates['tau_h'] = [0, 1]
         self.param_estimates['lambda_dh'] = [0,20]
+        self.param_estimates['K'] = [0,1e5]
         
         
         self.dose_time_D = np.array([[-1,-1],
@@ -240,9 +241,9 @@ class growth_model_1(growth_model):
         
         #self.param_list = list(self.param_estimates.keys())
         
-        self.num_samples = 300
-        self.num_chains = 48
-        self.num_cores = 5
+        self.num_samples = 30 #300
+        self.num_chains = 1 #48
+        self.num_cores = 1 #5
         self.t_span = (7,70)
         
     
@@ -254,13 +255,13 @@ class growth_model_1(growth_model):
         return sim_T['y']
         
         
-    def dTdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh):
+    def dTdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh, K):
         D = self.get_y_of_t(t, self.sim_D['t'], self.sim_D['y'])
         H = self.get_y_of_t(t, self.sim_H['t'], self.sim_H['y'])
 
-        return y*(r - lambda_h*H - lambda_hd*H*D)
+        return y*(1-y/K)*(r - lambda_h*H - lambda_hd*H*D)
     
-    def dDdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh):
+    def dDdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh, K):
         def activation(t):
             #return (np.abs(self.dose_time_D[:,0]-t) <= eps) + (np.abs(self.dose_time_D[:,1]-t) <= eps)
             first_dose = np.logical_and(t >= self.dose_time_D[:,0], t < (self.dose_time_D[:,0] + 1))
@@ -269,7 +270,7 @@ class growth_model_1(growth_model):
     
         return -tau_d*y + activation(t)
     
-    def dHdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh):
+    def dHdt(self, t, y, r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh, K):
         def activation(t):
             #return (np.abs(self.dose_time_H[:,0]-t) <= eps) + (np.abs(self.dose_time_H[:,1]-t) <= eps)
             first_dose = np.logical_and(t >= self.dose_time_H[:,0], t < (self.dose_time_H[:,0] + 1))
@@ -303,13 +304,27 @@ class growth_model_1(growth_model):
 gm1 = growth_model_1()
 print(gm1.dose_time_D)
 print(gm1.dose_time_H)
+"""
 r = 6.19e-2
 lambda_h = 2.89e-2
 lambda_hd = 7.03e-2
 tau_d = 1.72e-3
 tau_h = 4.17e-3
 lambda_dh = 9.78
-sim_params = np.array([r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh])
+K =
+"""
+r = 6.880681e-02
+lambda_h = 4.224530e-02
+lambda_hd = 9.572470e-02
+tau_d = 9.874700e-03
+tau_h = 1.908911e-02
+lambda_dh = 3.028982e+01
+K = 4.421688e+03
+
+
+
+
+sim_params = np.array([r, lambda_h, lambda_hd, tau_d, tau_h, lambda_dh, K])
 #gm1.set_sim_DH(sim_params)
 gm1.rhs(None, sim_params)
 
