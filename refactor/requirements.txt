@@ -62,7 +62,7 @@ prometheus-client==0.8.0
 prompt-toolkit==3.0.7
 pycosat==0.6.3
 pycparser==2.20
-Pygments==2.7.1
+Pygments==2.7.4
 pygpu==0.7.6
 pymc3==3.9.3
 pyOpenSSL==19.1.0
